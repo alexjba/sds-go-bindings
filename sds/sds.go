@@ -179,7 +179,11 @@ func SdsGoCallback(ret C.int, msg *C.char, len C.size_t, resp unsafe.Pointer) {
 		// before unblocking the waiting goroutine that reads them.
 		if msg != nil && len > 0 {
 			m.msg = C.cGoMemDup(unsafe.Pointer(msg), len)
-			m.len = len
+			if m.msg != nil {
+				m.len = len
+			} else {
+				m.ret = C.RET_ERR
+			}
 		}
 		wg := (*sync.WaitGroup)(m.ffiWg)
 		wg.Done()
